@@ -2,13 +2,20 @@ import pandas as pd
 from tabulate import tabulate
 from datetime import datetime
 
-# ADD right path!
+'''
+USER NOTE! 
+ADD right path
+fileinput - path to downloaded from Ags account file (report we've created earlier) 
+save_path - where do you want to save final report
+'''
+
 fileinput = '/Users/mariashukaliuk/Downloads/Maria_report_for_Aske.csv'
 save_path = '/Users/mariashukaliuk/Downloads'
 
-
-
-# DONT CHANGE ANYTHING BELOW
+'''
+USER NOTE! 
+DONT CHANGE ANYTHING BELOW
+'''
 
 df = pd.read_csv(fileinput)
 
@@ -24,6 +31,9 @@ pmax_df = df[df['Campaign type'] == 'Performance Max']
 shop_df = df[df['Campaign type'] == 'Shopping']
 
 # Cost amount
+'''
+Convert all currencies to the required one and recalculate the budget to the required currency
+'''
 curr_num = int(input('How many currencies are you working with: ').strip())
 
 currency_to_report = 0
@@ -59,7 +69,9 @@ def calculate_total_cost(df, curlist, exchange_rates):
 
     return total_cost_df
 
-
+'''
+Convert all currencies to the required one and recalculate the Revenue to the required currency
+'''
 def calculate_total_conv(df, curlist, exchange_rates):
     total_conv_df = 0
     conv_sums = {}
@@ -100,6 +112,9 @@ for df_name, df_data in df_list:
     total_conv = calculate_total_conv([(df_name, df_data)], curlist, exchange_rates)
 
 # Clicks amount
+'''
+Calculate sum of clicks by Ad formats
+'''
 clicks_non_brand_sum = search_non_brand_df['Clicks'].sum()
 clicks_brand_sum = search_brand_df['Clicks'].sum()
 
@@ -112,6 +127,9 @@ clicks_shop_sum = shop_df['Clicks'].sum()
 # print("clicks_NON_brand_sum", clicks_non_brand_sum)
 
 # Impr amount
+'''
+Calculate sum of impressions by Ad formats
+'''
 impr_brand_sum = search_brand_df['Impr.'].sum()
 impr_non_brand_sum = search_non_brand_df['Impr.'].sum()
 impr_yt_dg_sum = yt_dg_df['Impr.'].sum()
@@ -123,6 +141,9 @@ impr_shop_sum = shop_df['Impr.'].sum()
 # print("impr_brand_sum", impr_brand_sum)
 
 # Conv amount
+'''
+Calculate sum of convertions by Ad formats
+'''
 conv_brand_sum = search_brand_df['Conversions'].sum()
 conv_non_brand_sum = search_non_brand_df['Conversions'].sum()
 conv_yt_dg_sum = yt_dg_df['Conversions'].sum()
@@ -133,7 +154,7 @@ conv_shop_sum = shop_df['Conversions'].sum()
 # print('\n Print CONVERSION results__________________________________________\n')
 # print("conv_brand_sum ", conv_brand_sum )
 
-# Define columns
+# Define columns to print results
 columns = ['Conversions', 'Clicks', 'Impr.', 'Revenue', 'Spend', 'AOV', 'CPC', 'ROAS', 'CPM']
 """
 'Conversions', 'Clicks', 'Impr.' - getting from file
@@ -206,14 +227,14 @@ for row_name, df_row in rows:
             impr_sum = '{:.0f}'.format(df_row[col_name].sum())
             data.append(impr_sum)
 
-    # Додавання даних до списку
+
     table_list.append([row_name] + data)
 
-# Друк таблиці
+
 print(tabulate(table_list, headers=[''] + columns, tablefmt='grid'))
 
-# Збереження результатів у файл Excel
+# Saving results to an Excel file
 timestamp = datetime.now().strftime('%Y-%m-%d_%H-%M-%S')
-filename = timestamp + 'GoogleAds_ExportReport.xlsx'  # Назва файлу
+filename = timestamp + 'GoogleAds_ExportReport.xlsx'
 with pd.ExcelWriter(filename, engine='openpyxl') as writer:
     pd.DataFrame(table_list, columns=[''] + columns).to_excel(writer, index=False, sheet_name='Results')
